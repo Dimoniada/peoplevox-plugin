@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Peoplevox Range Label Printer
 // @namespace    https://github.com/Dimoniada/peoplevox-plugin
-// @version      0.1.0
+// @version      0.1.1
 // @description  Print location labels for a barcode range on Peoplevox Manage locations.
 // @match        https://wms.peoplevox.net/rkb4952/ui/*
 // @grant        GM_registerMenuCommand
@@ -379,10 +379,11 @@ const WINDOW_CSS = `
   color: var(--fg); font: 14px/1.3 Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif;
   box-shadow: 0 6px 24px rgba(0, 0, 0, .35); cursor: move; touch-action: none;
   user-select: none; -webkit-user-select: none; }
-.icon { position: absolute; top: 2px; width: 26px; height: 26px; padding: 0; border: 0; background: none;
-  color: var(--fg); font-size: 18px; line-height: 26px; cursor: pointer; }
-.close { right: 4px; }
-.gear { right: 30px; font-size: 15px; }
+.icon { position: absolute; top: 2px; display: flex; align-items: center; justify-content: center; width: 26px;
+  height: 26px; padding: 0; border: 0; background: none; color: var(--fg); cursor: pointer; }
+.icon svg { width: 16px; height: 16px; }
+.close { right: 6px; }
+.gear { right: 34px; }
 .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
 input, select, button { font: inherit; color: var(--fg); }
 .field { flex: 1; min-width: 0; box-sizing: border-box; height: 34px; padding: 0 8px; border: 1.5px solid var(--line);
@@ -395,20 +396,25 @@ input, select, button { font: inherit; color: var(--fg); }
   background: var(--field); cursor: pointer; }
 .list { margin: 8px 0 0; padding: 6px 8px 6px 24px; max-height: 8em; overflow: auto; border-radius: 4px;
   background: var(--field); color: var(--err); cursor: auto; touch-action: pan-y; user-select: text; -webkit-user-select: text; }
-.settings label { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; }
-.settings select, .settings input[type=number] { height: 28px; border: 1.5px solid var(--line); border-radius: 3px; background: var(--field); }
-.settings input[type=number] { width: 80px; }
+.settings { display: grid; grid-template-columns: minmax(0, 1fr) 128px; gap: 10px; align-items: center; margin-top: 18px; }
+.settings input, .settings select, .settings button { width: 100%; box-sizing: border-box; margin: 0; }
+.settings select, .settings input[type=number], .settings input[type=color] { height: 30px; padding: 0 4px;
+  border: 1.5px solid var(--line); border-radius: 3px; background: var(--field); }
+.settings input:disabled { opacity: .35; cursor: not-allowed; }
+option { background: var(--solid); color: var(--fg); }
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #4da3ff; outline-offset: 1px; }
 `;
 
-function createWindow({ settings, onPrint, onStop, onClose, onSettings }) {
-  const host = document.createElement('div');
-  host.style.cssText = 'position:fixed;top:72px;right:16px;z-index:2147483647;';
-  const root = host.attachShadow({ mode: 'open' });
-  root.innerHTML = `<style>${WINDOW_CSS}</style>
+const ICON_GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">'
+  + '<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/>'
+  + '<path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg>';
+const ICON_CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">'
+  + '<path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+const WINDOW_HTML = `
 <div class="frame">
-  <button class="icon gear" type="button" title="Settings" aria-label="Settings">⚙</button>
-  <button class="icon close" type="button" title="Close" aria-label="Close">×</button>
+  <button class="icon gear" type="button" title="Settings" aria-label="Settings">${ICON_GEAR}</button>
+  <button class="icon close" type="button" title="Close" aria-label="Close">${ICON_CLOSE}</button>
   <div class="main">
     <div class="row"><label for="range">Range:</label><input id="range" class="field" type="text"
       autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="HB6.B[1-10].L[3-9]"></div>
@@ -416,14 +422,20 @@ function createWindow({ settings, onPrint, onStop, onClose, onSettings }) {
     <div class="row"><span class="status" role="status" aria-live="polite"></span><button class="go" type="button">Print</button></div>
   </div>
   <form class="settings" hidden>
-    <label>Transparency<input name="transparency" type="range" min="0" max="0.7" step="0.05"></label>
-    <label>Theme<select name="theme"><option value="auto">Match page</option><option value="light">Light</option>
-      <option value="dark">Dark</option><option value="color">Solid colour</option></select></label>
-    <label>Colour<input name="color" type="color"></label>
-    <label>Delay between labels, ms<input name="delayMs" type="number" min="0" max="10000" step="50"></label>
-    <div class="row"><span class="status"></span><button class="go" type="submit">Save</button></div>
+    <label for="s-transparency">Transparency</label><input id="s-transparency" name="transparency" type="range" min="0" max="0.7" step="0.05">
+    <label for="s-theme">Theme</label><select id="s-theme" name="theme"><option value="auto">Match page</option>
+      <option value="light">Light</option><option value="dark">Dark</option><option value="color">Solid colour</option></select>
+    <label for="s-color">Colour</label><input id="s-color" name="color" type="color">
+    <label for="s-delay">Delay between printing, ms</label><input id="s-delay" name="delayMs" type="number" min="0" max="10000" step="50">
+    <span></span><button class="go" type="submit">Save</button>
   </form>
 </div>`;
+
+function createWindow({ settings, onPrint, onStop, onClose, onSettings }) {
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;top:72px;right:16px;z-index:2147483647;';
+  const root = host.attachShadow({ mode: 'open' });
+  root.innerHTML = `<style>${WINDOW_CSS}</style>${WINDOW_HTML}`;
   const $ = (sel) => root.querySelector(sel);
   const frame = $('.frame');
   const main = $('.main');
@@ -454,6 +466,8 @@ function createWindow({ settings, onPrint, onStop, onClose, onSettings }) {
     frame.style.setProperty('--line', `rgba(${fr},${fgr},${fb},.75)`);
     frame.style.setProperty('--field', `rgba(${fr},${fgr},${fb},.06)`);
     frame.style.setProperty('--err', fg === '#ffffff' ? '#ff6b6b' : '#c62828');
+    frame.style.setProperty('--solid', bg); // opaque, for the dropdown's item list
+    frame.style.colorScheme = fg === '#ffffff' ? 'dark' : 'light'; // native popups and spinners follow the window
   }
 
   function render(v) {
@@ -480,10 +494,16 @@ function createWindow({ settings, onPrint, onStop, onClose, onSettings }) {
       f.theme.value = current.theme;
       f.color.value = current.color;
       f.delayMs.value = String(current.delayMs);
+      syncColorPicker();
     }
     form.hidden = !opening;
     main.hidden = opening;
   });
+  // The colour only applies to "Solid colour".
+  const syncColorPicker = () => {
+    form.elements.color.disabled = form.elements.theme.value !== 'color';
+  };
+  form.elements.theme.addEventListener('change', syncColorPicker);
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const f = form.elements;
@@ -604,7 +624,7 @@ if (typeof window === 'undefined') {
     searchLocations, printLocation, readPrintOptions, isPrinterSet, OPTIONS_KEY,
     createJob, viewFor,
     loadSettings, saveSettings, textColorFor, SETTINGS_KEY,
-    isLocationsPage, WINDOW_CSS, pickPageBackground, isEnabledYaml,
+    isLocationsPage, WINDOW_CSS, WINDOW_HTML, pickPageBackground, isEnabledYaml,
   };
 } else {
   main();

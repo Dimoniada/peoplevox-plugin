@@ -32,3 +32,14 @@ test('page background: first mostly-opaque colour up the ancestor chain', () => 
   assert.equal(pickPageBackground(['transparent', 'rgba(0, 0, 0, 0)']), '#ffffff');
   assert.equal(pickPageBackground([]), '#ffffff');
 });
+test('settings panel: wording, one control column, drawn icons, readable dropdown items', () => {
+  const { WINDOW_HTML, WINDOW_CSS } = require('../peoplevox-range-printer.user.js');
+  assert.match(String(WINDOW_HTML), />Delay between printing, ms</);
+  assert.doesNotMatch(String(WINDOW_HTML), /⚙|×/); // drawn icons sit on the same line on every system
+  assert.match(WINDOW_CSS, /\.settings\s*\{[^}]*display:\s*grid/);
+  assert.match(WINDOW_CSS, /option\s*\{[^}]*background:/);
+});
+test('colour picker has a greyed-out disabled look', () => {
+  const { WINDOW_CSS } = require('../peoplevox-range-printer.user.js');
+  assert.match(WINDOW_CSS, /\.settings input:disabled\s*\{[^}]*opacity/);
+});
