@@ -1,0 +1,4 @@
+# Remote switch for the Peoplevox Range Label Printer.
+# The plugin reads this file every time someone presses Print.
+# Set to false to stop it on every machine (it then shows "Plugin disabled").
+enabled: true

@@ -1,0 +1,7 @@
+{
+  "name": "peoplevox-range-printer",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  }
+}
