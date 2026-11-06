@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Peoplevox Range Label Printer
 // @namespace    https://github.com/Dimoniada/peoplevox-plugin
-// @version      0.1.1
+// @version      0.1.2
 // @description  Print location labels for a barcode range on Peoplevox Manage locations.
 // @match        https://wms.peoplevox.net/rkb4952/ui/*
 // @grant        GM_registerMenuCommand
@@ -28,9 +28,15 @@ function seq(from, to, fmt) {
   }
 }
 
+// '1,4,7-9' -> ['1','4','7','8','9']: comma-separated items, each a single value or an a-b range.
 function rangeValues(content) {
   const bad = new Error(`Bad range [${content}]`);
-  const bounds = content.split('-').map((s) => s.trim());
+  return content.split(',').flatMap((item) => itemValues(item.trim(), bad));
+}
+
+function itemValues(item, bad) {
+  if (/^[A-Za-z0-9]+$/.test(item)) return [item]; // single value, kept exactly as typed
+  const bounds = item.split('-').map((s) => s.trim());
   if (bounds.length !== 2) throw bad;
   const [a, b] = bounds;
   if (/^\d+$/.test(a) && /^\d+$/.test(b)) {

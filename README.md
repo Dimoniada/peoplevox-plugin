@@ -35,6 +35,8 @@ in range order. It uses the printer, template and copies saved in Peoplevox's ow
 **Range syntax:**
 - `[a-b]` is inclusive. Numbers can count up or down (`[9-3]`), and single letters work too
   (`[A-C]`).
+- Commas list separate values or ranges: `[1,4]` gives 1 and 4; `[1,4,7-9]` gives 1, 4, 7, 8, 9.
+  Values print in the order typed.
 - Leading zeros are kept only if you type them: `[01-10]` gives 01…10.
 - Several ranges nest left to right: `HB6.B[1-2].L[3-4]` gives B1.L3, B1.L4, B2.L3, B2.L4.
 

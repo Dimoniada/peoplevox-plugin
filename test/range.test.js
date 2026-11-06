@@ -32,13 +32,23 @@ test('zero padding only when typed', () => {
   assert.deepEqual([c[0], c[99]], ['X100', 'X01']);
   assert.deepEqual(expand('X[01-001]'), ['X001']); // both padded: longer width wins
 });
+test('comma lists', () => {
+  assert.deepEqual(expand('X[1,4]'), ['X1', 'X4']);
+  assert.deepEqual(expand('X[1,4,7-9]'), ['X1', 'X4', 'X7', 'X8', 'X9']);
+  assert.deepEqual(expand('X[A,C-D]'), ['XA', 'XC', 'XD']);
+  assert.deepEqual(expand('X[4,1]'), ['X4', 'X1']); // order kept as typed
+  assert.deepEqual(expand('X[01,9-10]'), ['X01', 'X9', 'X10']); // padding per item
+  assert.deepEqual(expand('X[ 1 , 3 - 4 ]'), ['X1', 'X3', 'X4']);
+  assert.deepEqual(expand('B[1,3].L[2,5]'), ['B1.L2', 'B1.L5', 'B3.L2', 'B3.L5']);
+  assert.deepEqual(expand('X[7]'), ['X7']); // a single value is a one-item list
+});
 test('whitespace tolerated', () => assert.deepEqual(expand('  HB6.B[ 1 - 2 ] '), ['HB6.B1', 'HB6.B2']));
 test('invalid input', () => {
   assert.throws(() => parseRange(''), { message: 'Empty input' });
   assert.throws(() => parseRange('   '), { message: 'Empty input' });
   assert.throws(() => parseRange('HB6.B[1-2'), { message: 'Missing ]' });
   assert.throws(() => parseRange('HB6.B1-2]'), { message: 'Missing [' });
-  for (const bad of ['A-9', 'a-C', 'AA-AC', '-2', '1-', '1.5-2', '1-2-3', '']) {
+  for (const bad of ['A-9', 'a-C', 'AA-AC', '-2', '1-', '1.5-2', '1-2-3', '', '1,', ',1', '1,,2', '1,2-', 'A.B']) {
     assert.throws(() => parseRange(`X[${bad}]`), { message: `Bad range [${bad}]` });
   }
   assert.throws(() => parseRange('X[[1-2]]'), /Bad range/);
