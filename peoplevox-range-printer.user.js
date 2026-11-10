@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Peoplevox Range Label Printer
 // @namespace    https://github.com/Dimoniada/peoplevox-plugin
-// @version      0.1.2
+// @version      0.1.3
 // @description  Print location labels for a barcode range on Peoplevox Manage locations.
 // @match        https://wms.peoplevox.net/rkb4952/ui/*
 // @grant        GM_registerMenuCommand
@@ -423,7 +423,7 @@ const WINDOW_HTML = `
   <button class="icon close" type="button" title="Close" aria-label="Close">${ICON_CLOSE}</button>
   <div class="main">
     <div class="row"><label for="range">Range:</label><input id="range" class="field" type="text"
-      autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="HB6.B[1-10].L[3-9]"></div>
+      autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="HB6.B[3-6].L[1,5]"></div>
     <ul class="list" hidden></ul>
     <div class="row"><span class="status" role="status" aria-live="polite"></span><button class="go" type="button">Print</button></div>
   </div>
