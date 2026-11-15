@@ -71,10 +71,10 @@ Run `npm test` (Node 18+, no dependencies).
 
 | Browser | Install | Print 1 / range | Drag | Theme / gear | × and menu | Printer not set | Stop |
 |---|---|---|---|---|---|---|---|
-| Firefox (Windows) | | | | | | | |
-| Chrome | | | | | | | |
-| Opera | | | | | | | |
-| Safari (Mac) | | | | | | | |
-| Safari (iPhone/iPad) | | | | | | | |
-| Firefox (Android) | | | | | | | |
+| Firefox (Windows) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Chrome | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Opera | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Safari (Mac) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Safari (iPhone/iPad) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Firefox (Android) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Orion (iPhone), Violentmonkey | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
