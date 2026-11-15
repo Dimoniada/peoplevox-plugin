@@ -13,8 +13,11 @@ in range order. It uses the printer, template and copies saved in Peoplevox's ow
    - **Safari on Mac:** Mac App Store.
    - **Safari on iPhone/iPad:** App Store. Then turn it on in Settings → Safari → Extensions,
      and allow it on `wms.peoplevox.net`.
-   - Chrome and Opera on phones can't run extensions, so use Safari (iOS) or Firefox (Android).
-2. Open https://raw.githubusercontent.com/Dimoniada/peoplevox-plugin/main/peoplevox-range-printer.user.js in that browser. Tampermonkey shows its install page; click **Install**.
+   - **Orion on iPhone:** use Violentmonkey instead of Tampermonkey. Inside Orion, open
+     addons.mozilla.org, find Violentmonkey and add it.
+   - Chrome and Opera on phones can't run extensions, so use Safari or Orion (iOS) or Firefox
+     (Android).
+2. Open https://raw.githubusercontent.com/Dimoniada/peoplevox-plugin/main/peoplevox-range-printer.user.js in that browser. Tampermonkey (or Violentmonkey) shows its install page; confirm the install.
 
 ## Use
 
@@ -74,3 +77,4 @@ Run `npm test` (Node 18+, no dependencies).
 | Safari (Mac) | | | | | | | |
 | Safari (iPhone/iPad) | | | | | | | |
 | Firefox (Android) | | | | | | | |
+| Orion (iPhone), Violentmonkey | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
