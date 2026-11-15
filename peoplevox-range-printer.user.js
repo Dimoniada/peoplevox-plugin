@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Peoplevox Range Label Printer
 // @namespace    https://github.com/Dimoniada/peoplevox-plugin
-// @version      0.1.3
+// @version      0.1.4
 // @description  Print location labels for a barcode range on Peoplevox Manage locations.
 // @match        https://wms.peoplevox.net/rkb4952/ui/*
 // @grant        GM_registerMenuCommand
@@ -356,6 +356,16 @@ function saveSettings(storage, settings) {
   storage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
+// The settings panel's controls as a settings object; an empty delay keeps the current one.
+function settingsFromForm(f, current) {
+  return {
+    opacity: Math.round((1 - Number(f.transparency.value)) * 100) / 100,
+    theme: f.theme.value,
+    color: f.color.value,
+    delayMs: f.delayMs.value.trim() === '' ? current.delayMs : Number(f.delayMs.value),
+  };
+}
+
 const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 
 // Black or white text, whichever contrasts more with the background (WCAG luminance crossover).
@@ -433,7 +443,7 @@ const WINDOW_HTML = `
       <option value="light">Light</option><option value="dark">Dark</option><option value="color">Solid colour</option></select>
     <label for="s-color">Colour</label><input id="s-color" name="color" type="color">
     <label for="s-delay">Delay between printing, ms</label><input id="s-delay" name="delayMs" type="number" min="0" max="10000" step="50">
-    <span></span><button class="go" type="submit">Save</button>
+    <span></span><button class="go" type="submit">OK</button>
   </form>
 </div>`;
 
@@ -510,15 +520,12 @@ function createWindow({ settings, onPrint, onStop, onClose, onSettings }) {
     form.elements.color.disabled = form.elements.theme.value !== 'color';
   };
   form.elements.theme.addEventListener('change', syncColorPicker);
+  // Every change applies and is saved at once; OK only returns to the main view.
+  const applyForm = () => onSettings(settingsFromForm(form.elements, current));
+  form.addEventListener('input', applyForm);
+  form.addEventListener('change', applyForm);
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const f = form.elements;
-    onSettings({
-      opacity: Math.round((1 - Number(f.transparency.value)) * 100) / 100,
-      theme: f.theme.value,
-      color: f.color.value,
-      delayMs: Number(f.delayMs.value),
-    });
     form.hidden = true;
     main.hidden = false;
   });
@@ -629,7 +636,7 @@ if (typeof window === 'undefined') {
     parseRange, expandParts, findLocations,
     searchLocations, printLocation, readPrintOptions, isPrinterSet, OPTIONS_KEY,
     createJob, viewFor,
-    loadSettings, saveSettings, textColorFor, SETTINGS_KEY,
+    loadSettings, saveSettings, settingsFromForm, textColorFor, SETTINGS_KEY,
     isLocationsPage, WINDOW_CSS, WINDOW_HTML, pickPageBackground, isEnabledYaml,
   };
 } else {
