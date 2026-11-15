@@ -43,3 +43,15 @@ test('colour picker has a greyed-out disabled look', () => {
   const { WINDOW_CSS } = require('../peoplevox-range-printer.user.js');
   assert.match(WINDOW_CSS, /\.settings input:disabled\s*\{[^}]*opacity/);
 });
+test('settings panel: OK button, values read straight from the controls', () => {
+  const { WINDOW_HTML, settingsFromForm } = require('../peoplevox-range-printer.user.js');
+  assert.match(String(WINDOW_HTML), /type="submit">OK</);
+  assert.doesNotMatch(String(WINDOW_HTML), />Save</);
+  const form = (transparency, theme, color, delayMs) =>
+    ({ transparency: { value: transparency }, theme: { value: theme }, color: { value: color }, delayMs: { value: delayMs } });
+  const current = { opacity: 0.9, theme: 'auto', color: '#1e1e1e', delayMs: 500 };
+  assert.deepEqual(settingsFromForm(form('0.35', 'color', '#ffcc00', '250'), current),
+    { opacity: 0.65, theme: 'color', color: '#ffcc00', delayMs: 250 });
+  assert.equal(settingsFromForm(form('0', 'dark', '#000000', ''), current).delayMs, 500); // empty while typing
+  assert.equal(settingsFromForm(form('0', 'dark', '#000000', '0'), current).delayMs, 0);
+});

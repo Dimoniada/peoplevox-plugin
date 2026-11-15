@@ -44,7 +44,8 @@ in range order. It uses the printer, template and copies saved in Peoplevox's ow
 - Several ranges nest left to right: `HB6.B[1-2].L[3-4]` gives B1.L3, B1.L4, B2.L3, B2.L4.
 
 **Settings (gear):** transparency, theme (match page, light, dark, or a solid colour), and the
-delay between labels. They're saved per browser.
+delay between labels. Each change applies and is saved at once; **OK** returns to the main
+window. Settings are kept per browser.
 
 ## Updates
 
