@@ -5,6 +5,8 @@ range such as `HB6.B[1-10].L[3-9]`, press **Print**, and one label prints for ev
 in range order. It uses the printer, template and copies saved in Peoplevox's own
 **Manage print options**.
 
+![The Range Printer window in the top-right corner of the Manage locations page](docs/images/manage-locations.webp)
+
 ## Install
 
 1. Install Tampermonkey for your browser:
@@ -22,6 +24,9 @@ in range order. It uses the printer, template and copies saved in Peoplevox's ow
 ## Use
 
 1. Open **Warehouse → Manage locations**. The window appears top-right.
+
+   <img src="docs/images/main-window.png" alt="Range Printer window with a range field and a Print button" width="312">
+
 2. If it says **Printer is not set**, click Peoplevox's *Manage print options* icon (the printer
    with the gear, above the grid). Pick the printer and template, then **Save**.
 3. Type a range and press **Print** or Enter.
@@ -46,6 +51,8 @@ in range order. It uses the printer, template and copies saved in Peoplevox's ow
 **Settings (gear):** transparency, theme (match page, light, dark, or a solid colour), and the
 delay between labels. Each change applies and is saved at once; **OK** returns to the main
 window. Settings are kept per browser.
+
+<img src="docs/images/settings.png" alt="Settings window with transparency, theme, colour and delay between printing" width="320">
 
 ## Updates
 
