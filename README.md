@@ -1,6 +1,6 @@
 # Peoplevox Range Label Printer
 
-A Tampermonkey script for Peoplevox's **Manage locations** page (`rkb4952`). Type a barcode
+A Tampermonkey script for Peoplevox's **Manage locations** page. Type a barcode
 range such as `HB6.B[1-10].L[3-9]`, press **Print**, and one label prints for every location,
 in range order. It uses the printer, template and copies saved in Peoplevox's own
 **Manage print options**.
